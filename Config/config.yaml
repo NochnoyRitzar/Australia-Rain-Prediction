@@ -1,0 +1,46 @@
+target: RainTomorrow
+wind_cols:
+  - WindGustDir
+  - WindDir9am
+  - WindDir3pm
+rain_cols:
+  - RainToday
+  - RainTomorrow
+nan_cols:
+  - Evaporation
+  - Sunshine
+  - Cloud9am
+  - Cloud3pm
+cols_to_drop:
+  - Date
+  - Location
+  - Temp9am
+  - Temp3pm
+  - Pressure9am
+wind_direction:
+  - W
+  - N
+  - E
+  - S
+outlier_cols:
+  - MinTemp
+  - MaxTemp
+  - Rainfall
+  - Evaporation
+  - WindGustSpeed
+  - WindSpeed9am
+  - WindSpeed3pm
+robust_cols:
+  - Rainfall
+  - Evaporation
+min_max_cols:
+  - MinTemp
+  - MaxTemp
+  - Sunshine
+  - WindGustSpeed
+  - WindSpeed9am
+  - WindSpeed3pm
+  - Humidity9am
+  - Humidity3pm
+  - Cloud9am
+  - Cloud3pm
