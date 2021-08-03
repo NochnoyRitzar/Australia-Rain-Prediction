@@ -1,4 +1,12 @@
 target: RainTomorrow
+object_cols:
+  - Date
+  - Location
+  - WindGustDir
+  - WindDir9am
+  - WindDir3pm
+  - RainToday
+  - RainTomorrow
 wind_cols:
   - WindGustDir
   - WindDir9am
@@ -44,3 +52,24 @@ min_max_cols:
   - Humidity3pm
   - Cloud9am
   - Cloud3pm
+lin_reg:
+  -
+
+log_reg:
+  -
+
+svm:
+  -
+
+knn:
+  -
+
+decision_tree:
+  -
+
+random_forest:
+  -
+
+mlp:
+  -
+
