@@ -13,9 +13,10 @@ import matplotlib.pyplot as plt
 import category_encoders as ce
 from imblearn.over_sampling import SMOTE
 
+from sklearn.experimental import enable_halving_search_cv
 from sklearn.feature_selection import f_classif, f_regression
 from sklearn.feature_selection import SelectKBest
-from sklearn.model_selection import HalvingRandomSearchCV, train_test_split
+from sklearn.model_selection import HalvingGridSearchCV, train_test_split
 from sklearn.preprocessing import RobustScaler, MinMaxScaler
 #Import models
 from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -183,6 +184,7 @@ def select_features(x_train, y_train):
     select_k_best = SelectKBest(score_func=f_classif, k=8).fit(x_train, y_train)
     best_cols = select_k_best.get_support(indices=True)
     x_train_classif = x_train.iloc[:, best_cols]
+    print(x_train.Pressure3pm.describe())
     print("Best features selected")
     return x_train_regr, x_train_classif
 
@@ -199,11 +201,14 @@ def tune_reg_models(x_train_regr, y_train):
     regr_estimators = {}
     logging.info("Tuning regression models...\n")
     for estimator_name, estimator in regr_models.items():
+        print("Training ", estimator_name)
         start = time.time()
-        clf = HalvingRandomSearchCV(estimator=estimator,
+        clf = HalvingGridSearchCV(estimator=estimator,
                                     param_grid=config.get(estimator_name),
                                     scoring="r2",
-                                    cv=5)
+                                    verbose=5,
+                                    n_jobs=-1,
+                                    cv=10)
         clf.fit(x_train_regr, y_train)
         stop = time.time()
         logging.info(f"Training time: {stop - start}s")
@@ -230,11 +235,14 @@ def tune_classif_models(x_train_classif, y_train):
     logging.info("Tuning regression models...\n")
     classif_estimators = {}
     for estimator_name, estimator in classif_models.items():
+        print("Training ", estimator_name)
         start = time.time()
-        clf = HalvingRandomSearchCV(estimator=estimator,
+        clf = HalvingGridSearchCV(estimator=estimator,
                                     param_grid=config.get(estimator_name),
                                     scoring="roc_auc",
-                                    cv=5)
+                                    verbose=5,
+                                    n_jobs=-1,
+                                    cv=10)
         clf.fit(x_train_classif, y_train)
         stop = time.time()
         logging.info(f"Training time: {stop - start}s")

@@ -50,26 +50,103 @@ min_max_cols:
   - WindSpeed3pm
   - Humidity9am
   - Humidity3pm
+  - Pressure3pm
   - Cloud9am
   - Cloud3pm
+
 lin_reg:
   -
+    n_jobs:
+      - -1
 
 log_reg:
   -
+    C:
+      - 0.01
+      - 0.1
+      - 1
+      - 5
+      - 10
+      - 25
+      - 50
+      - 100
+      - 500
+      - 1000
 
 svm:
   -
+    kernel:
+      - rbf
+      - poly
+      - sigmoid
+  -
+    gamma:
+      - scale
+      - auto
+  -
+    cache_size:
+      - 2000
 
 knn:
   -
+    n_neighbor:
+      - 5
+      - 10
+      - 20
+      - 40
+  -
+    weights:
+      - uniform
+      - distance
 
 decision_tree:
   -
+    criterion:
+      - gini
+      - entropy
+  -
+    max_depth:
+      - 7
+      - 10
+      - 12
+      - 15
 
 random_forest:
   -
+    n_estimators:
+      - 100
+      - 300
+      - 600
+      - 1000
+  -
+    criterion:
+      - gini
+      - entropy
+  -
+    max_depth:
+      - 7
+      - 10
+      - 12
+      - 15
+  -
+    random_state:
+      - 42
 
 mlp:
   -
+    solver:
+      - adam
+      - lbfgs
+  -
+    activation:
+      - tanh
+      - logistic
+      - relu
+  -
+    max_iter:
+      - 20000
+  -
+    alpha:
+      - 0.0001
+      - 0.05
 

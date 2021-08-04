@@ -1,0 +1,86 @@
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Training time: 2.973726749420166s
+INFO:LinearRegression() best score: -0.27587984155704404
+INFO:Tuning regression models...
+
+INFO:Training time: 3.570518970489502s
+INFO:LinearRegression() best score: -0.22105312791717066
+INFO:Tuning regression models...
+
+INFO:Training time: 3.401977777481079s
+INFO:LinearRegression() best score: -0.21977943520944954
+INFO:Tuning regression models...
+
+INFO:Training time: 3.754513740539551s
+INFO:LinearRegression() best score: -0.21891768801036965
+INFO:Training time: 23.763935089111328s
+INFO:LogisticRegression() best score: -0.05751507812009604
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Training time: 4.358743906021118s
+INFO:LinearRegression() best score: -0.2196615831234569
+INFO:Tuning regression models...
+
+INFO:Training time: 3.4898762702941895s
+INFO:LinearRegression() best score: -0.2211262855556681
+INFO:Training time: 20.345941305160522s
+INFO:LogisticRegression() best score: -0.09345392318584284
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Training time: 3.7905054092407227s
+INFO:LinearRegression() best score: -0.21977024695739988
+INFO:Training time: 20.85489249229431s
+INFO:LogisticRegression() best score: -0.10742894632475022
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Training time: 3.333758592605591s
+INFO:LinearRegression() best score: -0.21909252470347634
+INFO:Training time: 15.789394855499268s
+INFO:LogisticRegression() best score: -0.11339363177959963
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Training time: 4.875962972640991s
+INFO:LinearRegression() best score: -0.2191399439107528
+INFO:Tuning regression models...
+
+INFO:Training time: 4.062963485717773s
+INFO:LinearRegression() best score: -0.22067593775245387
+INFO:Tuning regression models...
+
+INFO:Training time: 3.3805105686187744s
+INFO:LinearRegression() best score: -0.22030938552788376
+INFO:Tuning regression models...
+
+INFO:Tuning regression models...
+
+INFO:Training time: 3.920405149459839s
+INFO:LinearRegression() best score: -0.22156011265429357
+INFO:Training time: 9.110154628753662s
+INFO:LogisticRegression() best score: -0.045456510493980674
+INFO:Tuning regression models...
+
