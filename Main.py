@@ -130,7 +130,7 @@ def split_sample_data(df):
     #Splitting data into train and test
     x_train, x_test, y_train, y_test = train_test_split(df.loc[:, df.columns != config.get("target")],
                                                         df[config.get("target")],
-                                                        test_size=0.2,
+                                                        test_size=0.25,
                                                         random_state=42)
     print("Data split")
 
@@ -168,7 +168,7 @@ def scale_data(x_train, x_test):
     return x_train, x_test
 
 
-def select_features(x_train, y_train):
+def select_features(x_train, y_train, x_test):
     """
     Selecting best features with SelectKBest
     :param x_train: train features
@@ -176,17 +176,21 @@ def select_features(x_train, y_train):
     :return: train sets for regression and classification models
     """
     #Select features for regression model
-    select_k_best = SelectKBest(score_func=f_regression, k=8).fit(x_train, y_train)
-    best_cols = select_k_best.get_support(indices=True)
-    x_train_regr = x_train.iloc[:, best_cols]
+    select_k_best = SelectKBest(score_func=f_regression, k=8)
+    x_train_regr = select_k_best.fit_transform(x_train, y_train)
+    # best_cols = select_k_best.get_support(indices=True)
+    # x_train_regr = x_train.iloc[:, best_cols]
+    x_test_regr = select_k_best.transform(x_test)
 
     #Select features for classification model
-    select_k_best = SelectKBest(score_func=f_classif, k=8).fit(x_train, y_train)
-    best_cols = select_k_best.get_support(indices=True)
-    x_train_classif = x_train.iloc[:, best_cols]
-    print(x_train.Pressure3pm.describe())
+    select_k_best = SelectKBest(score_func=f_classif, k=8)
+    x_train_classif = select_k_best.fit_transform(x_train, y_train)
+    # best_cols = select_k_best.get_support(indices=True)
+    # x_train_classif = x_train.iloc[:, best_cols]
+    x_test_classif = select_k_best.transform(x_test)
+
     print("Best features selected")
-    return x_train_regr, x_train_classif
+    return x_train_regr, x_train_classif, x_test_regr, x_test_classif
 
 
 def tune_reg_models(x_train_regr, y_train):
@@ -196,8 +200,8 @@ def tune_reg_models(x_train_regr, y_train):
     :param y_train: train data (target)
     :return: dictionary of best regression estimators
     """
-    regr_models = {"lin_reg":LinearRegression(),
-                  "log_reg":LogisticRegression()}
+    #pause = {"lin_reg":LinearRegression()}
+    regr_models = {"log_reg":LogisticRegression()}
     regr_estimators = {}
     logging.info("Tuning regression models...\n")
     for estimator_name, estimator in regr_models.items():
@@ -206,9 +210,9 @@ def tune_reg_models(x_train_regr, y_train):
         clf = HalvingGridSearchCV(estimator=estimator,
                                     param_grid=config.get(estimator_name),
                                     scoring="r2",
-                                    verbose=5,
+                                    verbose=10,
                                     n_jobs=-1,
-                                    cv=10)
+                                    cv=8)
         clf.fit(x_train_regr, y_train)
         stop = time.time()
         logging.info(f"Training time: {stop - start}s")
@@ -226,13 +230,13 @@ def tune_classif_models(x_train_classif, y_train):
     :param y_train: train data (target)
     :return: dictionary of best classification estimators
     """
-    classif_models = {"svm":SVC(),
-                      "knn":KNeighborsClassifier(),
+    #pause = {"svm":SVC()}
+    classif_models = {"knn":KNeighborsClassifier(),
                       "decision_tree":DecisionTreeClassifier(),
-                      "random_forest":RandomForestClassifier(),
-                      "mlp":MLPClassifier()}
+                      "random_forest": RandomForestClassifier(),
+                      "mlp":MLPClassifier(max_iter=50000)}
 
-    logging.info("Tuning regression models...\n")
+    logging.info("Tuning classification models...\n")
     classif_estimators = {}
     for estimator_name, estimator in classif_models.items():
         print("Training ", estimator_name)
@@ -240,21 +244,22 @@ def tune_classif_models(x_train_classif, y_train):
         clf = HalvingGridSearchCV(estimator=estimator,
                                     param_grid=config.get(estimator_name),
                                     scoring="roc_auc",
-                                    verbose=5,
+                                    verbose=10,
                                     n_jobs=-1,
-                                    cv=10)
+                                    cv=8)
         clf.fit(x_train_classif, y_train)
         stop = time.time()
         logging.info(f"Training time: {stop - start}s")
         best_score = clf.best_score_
         classif_estimators[estimator_name] = clf.best_estimator_
         logging.info("{} best score: {}".format(estimator, best_score))
+    print(classif_estimators)
     print("Classification models tuned")
     return classif_estimators
 
 
 def evaluate_models(regr_estimators, classif_estimators,
-                    x_train_regr, x_train_classif, x_test, y_train, y_test):
+                    x_train_regr, x_train_classif, x_test_regr, x_test_classif, y_train, y_test):
     """
     Retraining best ML models and evaluating them
     :param regr_estimators: dictionary of regression models
@@ -271,8 +276,8 @@ def evaluate_models(regr_estimators, classif_estimators,
     logging.info("Evaluating regression models: \n")
     for model_name, estimator in regr_estimators.items():
         estimator.fit(x_train_regr, y_train)
-        predict = estimator.predict(x_test)
-        predict_probability = estimator.predict_proba(x_test)[:, 1]
+        predict = estimator.predict(x_test_regr)
+        predict_probability = estimator.predict_proba(x_test_regr)[:, 1]
 
         logging.info("{}: \n".format(model_name))
         accuracy = accuracy_score(y_test, predict)
@@ -295,13 +300,13 @@ def evaluate_models(regr_estimators, classif_estimators,
         sns.heatmap(cm, cmap='Blues', annot=True, fmt='d', linewidths=5, cbar=False,
                     annot_kws={'fontsize': 15}, yticklabels=['0', '1'],
                     xticklabels=['Predict 0', 'Predict 1'])
-        fig.savefig("results/{}_confusion_matrix.png".format(model_name))
+        fig.savefig("Results/{}_confusion_matrix.png".format(model_name))
 
     logging.info("Evaluating classification models: \n")
     for model_name, estimator in classif_estimators.items():
         estimator.fit(x_train_classif, y_train)
-        predict = estimator.predict(x_test)
-        predict_probability = estimator.predict_proba(x_test)[:, 1]
+        predict = estimator.predict(x_test_classif)
+        predict_probability = estimator.predict_proba(x_test_classif)[:, 1]
 
         logging.info("{}: \n".format(model_name))
         accuracy = accuracy_score(y_test, predict)
@@ -324,11 +329,11 @@ def evaluate_models(regr_estimators, classif_estimators,
         sns.heatmap(cm, cmap='Blues', annot=True, fmt='d', linewidths=5, cbar=False,
                     annot_kws={'fontsize': 15}, yticklabels=['0', '1'],
                     xticklabels=['Predict 0', 'Predict 1'])
-        fig.savefig("results/{}_confusion_matrix.png".format(model_name))
+        fig.savefig("Results/{}_confusion_matrix.png".format(model_name))
 
     df_evaluation = pd.DataFrame.from_dict(evaluation_data, orient="index",
                                            columns=["accuracy", "f1_score", "roc_auc_score"])
-    df_evaluation.to_csv("results/evaluation.csv")
+    df_evaluation.to_csv("Results/evaluation.csv")
     print("Work complete!")
 
 
@@ -337,15 +342,15 @@ with open("Config/config.yaml", 'r') as file:
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO, filename="Results/logfile")
 
-df  = load_dataset("weatherAUS.csv")
+df = load_dataset("weatherAUS.csv")
 df = optimize_data(df)
 df = fill_data(df)
 df = scale_cat_data(df)
 df = handle_outliers(df)
 x_train, x_test, y_train, y_test = split_sample_data(df)
 x_train, x_test = scale_data(x_train, x_test)
-x_train_regr, x_train_classif  = select_features(x_train, y_train)
+x_train_regr, x_train_classif, x_test_regr, x_test_classif = select_features(x_train, y_train, x_test)
 regr_estimators = tune_reg_models(x_train_regr, y_train)
 classif_estimators = tune_classif_models(x_train_classif, y_train)
 evaluate_models(regr_estimators, classif_estimators,
-                x_train_regr, x_train_classif, x_test, y_train, y_test)
+                x_train_regr, x_train_classif, x_test_regr, x_test_classif, y_train, y_test)

@@ -54,10 +54,10 @@ min_max_cols:
   - Cloud9am
   - Cloud3pm
 
-lin_reg:
-  -
-    n_jobs:
-      - -1
+#lin_reg:
+#  -
+#    n_jobs:
+#      - -1
 
 log_reg:
   -
@@ -72,24 +72,32 @@ log_reg:
       - 100
       - 500
       - 1000
+  -
+    solver:
+      - newton-cg
+      - lbfgs
+      - liblinear
 
-svm:
-  -
-    kernel:
-      - rbf
-      - poly
-      - sigmoid
-  -
-    gamma:
-      - scale
-      - auto
-  -
-    cache_size:
-      - 2000
+#svm:
+#  -
+#    kernel:
+#      - rbf
+#      - poly
+#  -
+#    C:
+#      - 0.1
+#      - 1
+#      - 5
+#      - 10
+#      - 50
+#  -
+#    gamma:
+#      - auto
+#      - scale
 
 knn:
   -
-    n_neighbor:
+    n_neighbors:
       - 5
       - 10
       - 20
@@ -98,6 +106,12 @@ knn:
     weights:
       - uniform
       - distance
+  -
+    metric:
+      - euclidean
+      - manhattan
+      - chebyshev
+      - minkowski
 
 decision_tree:
   -
@@ -114,23 +128,21 @@ decision_tree:
 random_forest:
   -
     n_estimators:
+      - 5
+      - 10
+      - 20
+      - 50
       - 100
-      - 300
-      - 600
-      - 1000
   -
     criterion:
       - gini
       - entropy
   -
     max_depth:
+      - 5
       - 7
       - 10
       - 12
-      - 15
-  -
-    random_state:
-      - 42
 
 mlp:
   -
@@ -143,10 +155,9 @@ mlp:
       - logistic
       - relu
   -
-    max_iter:
-      - 20000
-  -
     alpha:
       - 0.0001
+      - 0.001
       - 0.05
+      - 0.1
 
