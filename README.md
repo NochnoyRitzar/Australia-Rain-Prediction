@@ -1,1 +1,1 @@
-# My first DS repo
+# Australia rain prediction project
